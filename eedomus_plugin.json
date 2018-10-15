@@ -1,0 +1,388 @@
+{
+    "plugin_id": "netatmotherm",
+    "name_fr": "Netatmo Energie App",
+    "icon": "netatmo_energie.png",
+    "version": "5.0",
+    "creation_date": "2017-12-03",
+    "modification_date": "2018-10-15",
+    "author": "<a href='https://twitter.com/Thibautg16' target='_blank'>@Thibautg16</a> / <a href='https://github.com/Thibautg16/NetatmoEnergyAppEedomus' target='_blank'> GitHub </a>",
+    "description_fr": "Gestion avancée de votre <a href='https://www.netatmo.com/fr-FR/product/energy/' target='_blank'>Thermostat Netatmo</a> depuis votre box Eedomus.<br/>Application personnalisable, vous pouvez choisir d'installer ou non les canaux optionnels",
+    "description_en": "Advanced management of your <a href='https://www.netatmo.com/product/energy/' target='_blank'>Netatmo thermostat</a> from your Eedomus box.<br/>Customizable application, you can choose to install or not the optional channels",
+    "forum_link": "",
+    "parameters":
+        [
+            {
+                "parameter": "configuration",
+                "description": "--------- Configuration ----------",
+                "xtype": "textfield",
+                "field": "allowBlank: true, width: 0, style: 'visibility:hidden;'"
+            },  
+            {
+                "parameter": "oauth_code", 
+                "description": "Code d'autorisation Oauth Netatmo :",
+                "xtype": "textfield",
+                "field": "allowBlank: false, maxLength:32, minLength:32, width: 240"
+            },
+            {
+                "parameter": "oauth_url", 
+                "description": "",
+                "xtype": "displayfield",
+                "field": "style: 'padding: 3px;', value: 'Cliquez <a href=\\'javascript:genericRegister(\"netatmo_thermostat\");\\'>ici pour obtenir votre code code d\\'autorisation</a>'"
+            },
+            {
+                "parameter": "home_name",
+                "description": "Non de votre maison :",
+                "xtype": "textfield",
+                "field": "width:130, allowBlank:false"
+            },
+            {
+                "parameter": "home_id",
+                "description": "ID de votre Maison :",
+                "xtype": "textfield",
+                "field": "width:130, allowBlank:false"
+            },            
+            {
+                "parameter": "room_name",
+                "description": "Piéce (thermostat) :",
+                "xtype": "textfield",
+                "default_value": "Salon",
+                "field": "width:250, allowBlank:false"
+            },
+            {
+                "parameter": "room_id",
+                "description": "Piéce ID (thermostat) :",
+                "xtype": "textfield",
+                "field": "width:250, allowBlank:false"
+            },            
+            {
+                "parameter": "choix_canaux_vide",
+                "description": "",
+                "xtype": "textfield",
+                "field": "allowBlank: true, width: 0, style: 'visibility:hidden;'"
+            },                     
+            {
+                "parameter": "choix_canaux",
+                "description": "--------- Choix des canaux ----------",
+                "xtype": "textfield",
+                "field": "allowBlank: true, width: 0, style: 'visibility:hidden;'"
+            },                 
+            {
+                "parameter": "maintainmode",
+                "description": "Mode manuel :",
+                "xtype": "combo",
+                "default_value": "always",
+                "field": "width:250, allowBlank:false, store:[['always', 'Permanent'], [15, '15 min'], [30, '30 min'], [45, '45 min'], [60, '1h'], [120, '2h'], [180, '3h'], [240, '4h'], [300, '5h'], [360, '6h']], editable: false, shadow: true, triggerAction: 'all', typeAhead:true"
+            }, 
+            {
+                "parameter": "box_consigne",
+                "description": "Consigne chauffage :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"
+            }, 
+            {
+                "parameter": "box_mode",
+                "description": "Mode chauffage :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"
+            },                    
+            {
+                "parameter": "box_etat_chauffage",
+                "description": "Etat chauffage :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"
+            },
+            {
+                "parameter": "box_relais_rf",
+                "description": "Signal radio du relais :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            },            
+            {
+                "parameter": "box_relais_wifi",
+                "description": "Signal wifi du relais :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            },           
+            {
+                "parameter": "box_thermo_rf",
+                "description": "Signal radio du thermostat :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            },
+            {
+                "parameter": "box_thermo_reachable",
+                "description": "Accessibilité thermostat :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            },            
+            {
+                "parameter": "box_thermo_batt",
+                "description": "Batterie thermostat :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            }                                      
+        ],
+    "scripts":
+        [
+            {
+                "name": "netatmo_thermostat_oauth.php"
+            }
+        ],        
+    "devices":
+        [
+            {
+                "device_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - plugin.parameters.room_name T°",
+                "utilisation_id":"7",
+                "value_unit": "°C",
+                "icon": "thermometer.png",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+                        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",                        
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/room_plugin.parameters.room_name/therm_measured_temperature",
+                        "POLLING": "5"
+                    }
+            },
+            {
+                "device_id": "consigne",
+                "create": "plugin.parameters.box_consigne",
+                "module_id": "41",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - plugin.parameters.room_name Consigne",
+                "utilisation_id":"4",
+                "value_unit": "°C",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+				        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",   
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/room_plugin.parameters.room_name/therm_setpoint_temperature",
+                        "POLLING": "5"
+                    },
+                "values":
+                    [
+                        { "value": "10", "icon": "consigne64.png", "description": "10°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=10" },
+                        { "value": "11", "icon": "consigne64.png", "description": "11°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=11" },
+                        { "value": "12", "icon": "consigne64.png", "description": "12°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=12" },
+                        { "value": "13", "icon": "consigne64.png", "description": "13°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=13" },
+                        { "value": "14", "icon": "consigne64.png", "description": "14°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=14" },
+                        { "value": "14.5", "icon": "consigne64.png", "description": "14.5°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=14.5" },
+                        { "value": "15", "icon": "consigne64.png", "description": "15°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=15" },
+                        { "value": "15.5", "icon": "consigne64.png", "description": "15.5°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=15.5" },
+                        { "value": "16", "icon": "consigne64.png", "description": "16°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=16" },
+                        { "value": "16.5", "icon": "consigne64.png", "description": "16.5°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=16.5" },
+                        { "value": "17", "icon": "consigne64.png", "description": "17°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=17" },
+                        { "value": "17.5", "icon": "consigne64.png", "description": "17.5°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=17.5" },
+                        { "value": "18", "icon": "consigne64.png", "description": "18°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=18" },
+                        { "value": "18.5", "icon": "consigne64.png", "description": "18.5°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=18.5" },
+                        { "value": "19", "icon": "consigne64.png", "description": "19°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=19" },
+                        { "value": "19.5", "icon": "consigne64.png", "description": "19.5°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=19.5" },
+                        { "value": "20", "icon": "consigne64.png", "description": "20°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=20" },
+                        { "value": "20.5", "icon": "consigne64.png", "description": "20.5°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=20.5" },
+                        { "value": "21", "icon": "consigne64.png", "description": "21°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=21" },
+                        { "value": "21.5", "icon": "consigne64.png", "description": "21.5°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=21.5" },
+                        { "value": "22", "icon": "consigne64.png", "description": "22°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=22" },
+                        { "value": "23", "icon": "consigne64.png", "description": "23°C", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&maintain_setpoint=[VAR3]&setpoint_temperature=23" }
+                    ]        
+            },
+            {
+                "device_id": "mode",
+                "create": "plugin.parameters.box_mode",
+                "module_id": "41",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - plugin.parameters.room_name Mode",
+                "utilisation_id":"4",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+				        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",   
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/room_plugin.parameters.room_name/therm_setpoint_mode",
+                        "POLLING": "5"
+                    },
+                "values":
+                    [
+                        { "value": "manual", "icon": "pilotage2.png", "description": "Manuel", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET", "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&setpoint_mode=manual" },
+                        { "value": "max", "icon": "chauffage_b1.png", "description": "Max", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET", "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&setpoint_mode=max" },
+                        { "value": "off", "icon": "chauffage_b2.png", "description": "Off", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET", "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&setpoint_mode=off" },
+                        { "value": "schedule", "icon": "timebackhome.png", "description": "Programmation", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&setpoint_mode=schedule" },
+                        { "value": "away", "icon": "action_in.png", "description": "Absence", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&setpoint_mode=away" },
+                        { "value": "hg", "icon": "chauffage_hg.png", "description": "Hors Gel", "http_url": "http://localhost/script/?exec=netatmo_thermostat_oauth.php", "http_type": "GET",  "http_params": "&oauth_code=[VAR1]&home_id=[VAR2]&room_id=plugin.parameters.room_id&setpoint_mode=hg" }                     
+                    ]        
+            },
+            {
+                "device_id": "relai_rf",
+                "create": "plugin.parameters.box_relais_rf",
+                "module_id": "51",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - Relai Rf",
+                "utilisation_id":"35",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+				        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",   
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/module_plugin.parameters.home_name/rf_strength",
+                        "POLLING": "5"
+                    },
+                    "values":
+                        [
+                            { "value": "low", "icon": "thermo_signal_min.png", "description": "Bas"},
+                            { "value": "medium", "icon": "thermo_signal_moy.png", "description": "Moyen"},
+                            { "value": "high", "icon": "thermo_signal_bon.png", "description": "Bon"},
+                            { "value": "full", "icon": "thermo_signal_bon.png", "description": "Parfait"}
+                        ]   
+            },
+            {
+                "device_id": "relai_wifi",
+                "create": "plugin.parameters.box_relais_wifi",
+                "module_id": "51",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - Relai Wifi",
+                "utilisation_id":"35",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+				        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",   
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/module_plugin.parameters.home_name/wifi_strength",
+                        "POLLING": "5"
+                    },
+                    "values":
+                        [
+                            { "value": "poor", "icon": "thermo_signal_bon.png", "description": "Moyen"},
+                            { "value": "good", "icon": "thermo_signal_moy.png", "description": "Bon"}
+                        ]  
+            },
+            {
+                "device_id": "thermostat_rf",
+                "create": "plugin.parameters.box_thermo_rf",
+                "module_id": "51",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - Thermostat Rf",
+                "utilisation_id":"35",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+				        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",   
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/module_Thermostat/rf_strength",
+                        "POLLING": "5"
+                    },
+                    "values":
+                        [
+                            { "value": "full", "icon": "thermo_signal_bon.png", "description": "Maximum"},
+                            { "value": "high", "icon": "thermo_signal_bon.png", "description": "Bon"},
+                            { "value": "medium", "icon": "thermo_signal_moy.png", "description": "Moyen"},
+                            { "value": "low", "icon": "thermo_signal_min.png", "description": "Faible"}
+                        ]   
+            },
+            {
+                "device_id": "thermostat_reachable",
+                "create": "plugin.parameters.box_thermo_reachable",
+                "module_id": "51",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - Thermostat Accessible",
+                "utilisation_id":"35",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+				        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",   
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/module_Thermostat/reachable",
+                        "POLLING": "5"
+                    },
+                "values":
+                    [
+                        { "value": "0", "icon": "thermo_signal_min.png", "description": "Non"},
+                        { "value": "1", "icon": "thermo_signal_bon.png", "description": "Oui"}
+                    ]        
+            },
+            {
+                "device_id": "thermostat_battery",
+                "create": "plugin.parameters.box_thermo_batt",
+                "module_id": "51",
+                "icon": "niveau_piles_energ.png",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - Thermostat Batt.",
+                "utilisation_id":"35",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+				        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",   
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/module_Thermostat/battery_state",
+                        "POLLING": "5"
+                    },
+                    "values":
+                    [
+                        { "value": "full", "icon": "niveau_piles_100_e.png", "description": "Pleine"},
+                        { "value": "high", "icon": "niveau_piles_75_en.png", "description": "Bonne"},
+                        { "value": "medium", "icon": "niveau_piles_50_en.png", "description": "Moyenne"},
+                        { "value": "low", "icon": "niveau_piles_10_en.png", "description": "Faible"}
+                    ]                       
+            },
+            {
+                "device_id": "etat_chauffage",
+                "create": "plugin.parameters.box_etat_chauffage",
+                "module_id": "51",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - Etat Chauffage",
+                "utilisation_id":"35",
+                "parameters":
+                    {
+				        "VAR1": "plugin.parameters.oauth_code",
+				        "VAR2": "plugin.parameters.home_id",
+                        "VAR3": "plugin.parameters.maintainmode",  
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_thermostat_oauth.php&oauth_code=[VAR1]&home_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/module_Thermostat/boiler_status",
+                        "POLLING": "5"
+                    },
+                "values":
+                    [
+                        { "value": "off", "icon": "chauffage_b2.png", "description": "Off"},                        
+                        { "value": "on", "icon": "thermostat_marche.png", "description": "On"},
+                        { "value": "valve_boost", "icon": "thermostat_marche.png", "description": "Valve Boost"},
+                        { "value": "anticipating", "icon": "thermostat_marche.png", "description": "Anticipation"}
+                    ]
+            }                                       
+        ]
+}
