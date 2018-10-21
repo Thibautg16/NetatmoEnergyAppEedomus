@@ -2,13 +2,13 @@
     "plugin_id": "netatmotherm",
     "name_fr": "Netatmo Energie App",
     "icon": "netatmo_energie.png",
-    "version": "5.0",
+    "version": "5.1",
     "creation_date": "2017-12-03",
-    "modification_date": "2018-10-15",
+    "modification_date": "2018-10-21",
     "author": "<a href='https://twitter.com/Thibautg16' target='_blank'>@Thibautg16</a> / <a href='https://github.com/Thibautg16/NetatmoEnergyAppEedomus' target='_blank'> GitHub </a>",
     "description_fr": "Gestion avancée de votre <a href='https://www.netatmo.com/fr-FR/product/energy/' target='_blank'>Thermostat Netatmo</a> depuis votre box Eedomus.<br/>Application personnalisable, vous pouvez choisir d'installer ou non les canaux optionnels",
     "description_en": "Advanced management of your <a href='https://www.netatmo.com/product/energy/' target='_blank'>Netatmo thermostat</a> from your Eedomus box.<br/>Customizable application, you can choose to install or not the optional channels",
-    "forum_link": "",
+    "forum_link": "https://forum.eedomus.com/viewtopic.php?f=50&t=6240",
     "parameters":
         [
             {

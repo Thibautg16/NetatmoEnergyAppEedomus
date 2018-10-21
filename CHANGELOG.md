@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v5.1] by @Thibautg16 - 2018-10-21
+- Fix : Erreur d'url dans le script pour les consignes manuels
+- Fix : Encodage script (iso-8859-1)
+
 ## [v5.0] by @Thibautg16 - 2018-10-15
 - New : prise en charge de la nouvelle API Netatmo (Piéces & Vannes)
 - Change : le nouveau script n'est pas compatible avec les anciennes applications 

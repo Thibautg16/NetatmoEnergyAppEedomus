@@ -18,7 +18,7 @@
 
 #### variables ####
 $MODE_NETATMO = 'netatmo'; // Dans ce mode, on met une consigne temporaire
-$MODE_EEDOMUS = 'eedomus'; // Dans ce mode, on maintient la tempï¿½rature de consigne
+$MODE_EEDOMUS = 'eedomus'; // Dans ce mode, on maintient la température de consigne
 $CACHE_DURATION = 2; // minutes
 $is_action = false; // Action ou mode capteur ?
 $code = getArg('oauth_code');
@@ -69,7 +69,7 @@ function sdk_netatmo_html($extension_module){
 	if(sizeof($extension_module) > 0){
 		$ret .= '<br>';
 		$ret .= '<br>';
-		$ret .= "Voici la liste de vos maisons et leurs piï¿½ces associï¿½es :";
+		$ret .= "Voici la liste de vos maisons et leurs pièces associées :";
 		$ret .= '<br>';
 		$ret .= '<ul>';
 		//homes informations
@@ -98,7 +98,7 @@ function sdk_netatmo_set_room_temperature($home_id, $room_id, $mode, $temperatur
 	{
 		$endtime = time() + $delay /*minutes*/ * 60;
 	}
-	$url = $GLOBALS['api_url'].'setroomthermpoint?home_id='.$home_id.'&room_id='.$room_id.'&mode=manual&temp='.$temperature.'&endtime='.$endtime;
+	$url = $GLOBALS['api_url'].'/api/setroomthermpoint?home_id='.$home_id.'&room_id='.$room_id.'&mode=manual&temp='.$temperature.'&endtime='.$endtime;
 	return sdk_get_query_and_check_error($url, $headers, FALSE, FALSE);
 }
 
@@ -167,16 +167,16 @@ if (!$is_action && $_GET['mode'] != 'verify' && $time_from_last < $CACHE_DURATIO
 
 ##### recuperation acces_token #####
 if (strlen($prev_code) > 1 && $code == $prev_code){
-	// on reprend le dernier refresh_token seulement s'il correspond au mï¿½me code
+	// on reprend le dernier refresh_token seulement s'il correspond au même code
 	$refresh_token = loadVariable('refresh_token');
 	$expire_time = loadVariable('expire_time');
-	// s'il n'a pas expirï¿½, on peut reprendre l'access_token
+	// s'il n'a pas expiré on peut reprendre l'access_token
   	if (time() < $expire_time){
     	$access_token = loadVariable('access_token');
   	}
 }
 
-// on a dï¿½jï¿½ un token d'accï¿½s non expirï¿½ pour le code demandï¿½e
+// on a déjà un token d'accès non expiré pour le code demandé
 if ($access_token == ''){
 	if (strlen($refresh_token) > 1){
 		// on peut juste rafraichir le token
@@ -184,7 +184,7 @@ if ($access_token == ''){
 		$postdata = 'grant_type='.$grant_type.'&refresh_token='.$refresh_token;
 	}
 	else{
-		// 1ï¿½re utilisation aprï¿½s obtention du code
+		// 1ére utilisation après obtention du code
 		$grant_type = 'authorization_code';
 		$redirect_uri = 'https://secure.eedomus.com/sdk/plugins/netatmo_thermostat/callback.php';
 		$scope = 'read_thermostat write_thermostat';
@@ -215,7 +215,7 @@ if ($access_token == ''){
 $headers = array("Authorization: Bearer ".$access_token);
 ################################################################
 
-##### information lors de la rï¿½cuperation du code oauth #####
+##### information lors de la récupération du code oauth #####
 if ($_GET['mode'] == 'verify'){
 	?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml">
@@ -239,7 +239,7 @@ if ($_GET['mode'] == 'verify'){
 	echo sdk_netatmo_html($json_homesdata);
 
 	echo '<br>';
-	echo "Vous pouvez copier/coller ces informations dans le paramï¿½trage de votre pï¿½riphï¿½rique Eedomus.";
+	echo "Vous pouvez copier/coller ces informations dans le paramétrage de votre périphérique Eedomus.";
 
 	die();
 }
@@ -259,11 +259,11 @@ if($home_id == ''){
 	die();
 }
 
-// Les critï¿½res sont rï¿½unis pour demander d'effectuer une action
+// Les critères sont réunis pour demander d'effectuer une action
 if ($is_action){
 	// Valeurs possibles pour le mode
 	$setpoint_mode_home_valid_values = array('away', 'hg', 'schedule');
-	$setpoint_mode_room_valid_valies = array('manual', 'home');
+	$setpoint_mode_room_valid_valies = array('home');
 
 	// XML de sortie
 	sdk_header('text/xml');
@@ -271,7 +271,7 @@ if ($is_action){
 	$xml .= '<netatmo>';
 	$xml .= '<status>';
 
-	// On va passer en mode manuel et forcer une tempï¿½rature
+	// On va passer en mode manuel et forcer une température
 	if($setpoint_temp != ''){
 		$mode;
 		$maintain_setpoint = $_GET['maintain_setpoint'];
@@ -288,12 +288,12 @@ if ($is_action){
 	}
 	// On va changer le mode de la room
 	else if(in_array($setpoint_mode, $setpoint_mode_room_valid_valies)){
-		$url = $api_url.'setroomthermpoint?home_id='.$home_id.'&room_id='.$room_id.'&mode='.$setpoint_mode;
+		$url = $api_url.'/api/setroomthermpoint?home_id='.$home_id.'&room_id='.$room_id.'&mode='.$setpoint_mode;
 		$xml .= sdk_get_query_and_check_error($url, $headers, FALSE, FALSE);
 	}
-	// On va seulement changer de mode sans modifier la tempï¿½rature
+	// On va seulement changer de mode sans modifier la température
 	else if(in_array($setpoint_mode, $setpoint_mode_home_valid_values)){
-		$url = $api_url.'setthermmode?home_id='.$home_id.'&mode='.$setpoint_mode;
+		$url = $api_url.'/api/setthermmode?home_id='.$home_id.'&mode='.$setpoint_mode;
 		$xml .= sdk_get_query_and_check_error($url, $headers, FALSE, FALSE);
 	}
 	else{
@@ -304,7 +304,7 @@ if ($is_action){
 	$xml .= '</netatmo>';
 	echo $xml;
 }
-// On effectue une lecture des donnï¿½es
+// On effectue une lecture des données
 else{
 	//variables
 	$modules_name = array();
@@ -373,10 +373,10 @@ else{
 	$cached_xml .= '<cached>0</cached>';
 	
 	if (isset($setpoint_temperature) && $setpoint_mode == 'manual'){
-		// Temperature manuellement imposee
+		// Température manuellement imposée
 		$cached_xml .= '<setpoint_temperature>'.$setpoint_temperature.'</setpoint_temperature>';
 
-		// Verification: besoin de l'imposer ï¿½ nouveau ?
+		// Vérification: besoin de l'imposer à nouveau ?
 		// Oui si on est en mode eedomus et proche du temps imparti
 		$maintain_mode = loadVariable('maintain_mode');
 		if($maintain_mode != $MODE_NETATMO){
