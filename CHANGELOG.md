@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v5.2] by @Thibautg16 & Eedomus Team - 2019-02-01
+- Fix : Prise en charge des accents (modification accents => "_")
+
 ## [v5.1] by @Thibautg16 - 2018-10-21
 - Fix : Erreur d'url dans le script pour les consignes manuels
 - Fix : Encodage script (iso-8859-1)

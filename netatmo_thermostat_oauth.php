@@ -36,6 +36,9 @@ $url_homestatus = $api_url.'/api/homestatus?home_id='.$home_id;
 ##### function #####
 function sdk_get_query_and_check_error($url, $headers, $result = TRUE, $error = TRUE){
 	$query = httpQuery($url, 'GET' , NULL, NULL, $headers);	
+	
+	// accents sur Netatmo thermostat : "Salle \u00e0 manger" => "Salle _ manger"
+	$query = preg_replace("/\\\\u([0-9a-fA-F]{4})/", "_", $query);
 	$json = sdk_json_decode($query);
 
 	//invalid token, on force l'expiration pour la fois suivante
